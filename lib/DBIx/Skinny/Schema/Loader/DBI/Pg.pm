@@ -5,13 +5,17 @@ use warnings;
 use base qw/DBIx::Skinny::Schema::Loader::DBI/;
 
 sub tables {
-    my $self = shift;
-    my $sth  = $self->{ dbh }->table_info('', 'public', undef, undef);
-    my @tables;
-    for my $rel (@{ $sth->fetchall_arrayref({}) }) {
-        push @tables, $rel->{TABLE_NAME};
-    }
-    return \@tables;
+    my $self   = shift;
+    my $quoter = $self->quoter || q{"};
+    my $dbh    = $self->{ dbh };
+
+    my @tables = ( $DBD::Pg::VERSION >= 1.31 )
+        ? $dbh->tables( undef, "public", "",
+                        "table", { noprefix => 1, pg_noprefix => 1 } )
+        : $dbh->tables;
+    s/\Q$quoter\E//g for @tables;
+
+    return [ sort @tables ];
 }
 
 1;

@@ -4,7 +4,7 @@ use lib './t';
 use FindBin::libs;
 use Data::Dumper;
 use Perl6::Say;
-use Test::More tests => 11;
+use Test::More tests => 12;
 use Test::Exception;
 
 use DBI;
@@ -28,13 +28,14 @@ throws_ok { DBIx::Skinny::Schema::Loader::DBI::Pg->new({ dsn => '', user => '', 
 ok my $loader = DBIx::Skinny::Schema::Loader::DBI::Pg->new({
         dsn => $testdsn, user => $testuser, pass => $testpass
     }), 'created loader object';
-is_deeply $loader->tables, [qw/authors books genders prefectures/], 'tables';
+is_deeply $loader->tables, [qw/authors books genders prefectures table/], 'tables';
 is_deeply $loader->table_columns('books'), [qw/id author_id name/], 'table_columns';
 
 is $loader->table_pk('authors'), 'id', 'authors pk';
 is $loader->table_pk('books'), 'id', 'books pk';
 is $loader->table_pk('genders'), 'name', 'genders pk';
 is $loader->table_pk('prefectures'), 'name', 'prefectures pk';
+is $loader->table_pk('table'), 'foo', '"table" pk';
 
 $dbh->do($_) for (
     qq{

@@ -32,7 +32,13 @@ sub setup_test_db {
                 id    int,
                 name  varchar(255) primary key
             )
-        }
+        },
+        qq{
+            CREATE TABLE "table" (
+                foo int primary key,
+                bar int
+            )
+        },
     );
     $self->dbh->do($_) for @statements;
 }
@@ -45,6 +51,7 @@ sub clean_test_db {
         q{ DROP TABLE genders },
         q{ DROP TABLE authors },
         q{ DROP TABLE books },
+        q{ DROP TABLE "table" },
     );
     $self->dbh->do($_) for @statements;
 }
